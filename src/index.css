@@ -1,0 +1,85 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--theme-font-body, 'Inter'), system-ui, sans-serif;
+  background-color: var(--theme-background, #f9fafb);
+  color: var(--theme-text, #111827);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--theme-font-heading, 'Inter'), system-ui, sans-serif;
+}
+
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-semibold text-white transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed;
+    border-radius: var(--theme-radius-btn, 0.5rem);
+    background-color: var(--theme-primary, #1d60f2);
+  }
+  .btn-primary:hover {
+    background-color: var(--theme-secondary, #164ae0);
+  }
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 border px-4 py-2.5 text-sm font-semibold transition-all active:scale-[0.98] disabled:opacity-50;
+    border-radius: var(--theme-radius-btn, 0.5rem);
+    background-color: var(--theme-surface, #ffffff);
+    border-color: var(--theme-border, #d1d5db);
+    color: var(--theme-text, #374151);
+  }
+  .btn-secondary:hover {
+    background-color: var(--theme-background, #f9fafb);
+  }
+  .btn-accent {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-semibold text-white transition-all active:scale-[0.98] disabled:opacity-50;
+    border-radius: var(--theme-radius-btn, 0.5rem);
+    background-color: var(--theme-accent, #f97316);
+  }
+  .btn-accent:hover {
+    filter: brightness(0.9);
+  }
+  .btn-danger {
+    @apply inline-flex items-center justify-center gap-2 bg-red-500 px-4 py-2.5 text-sm font-semibold text-white transition-all hover:bg-red-600 active:scale-[0.98] disabled:opacity-50;
+    border-radius: var(--theme-radius-btn, 0.5rem);
+  }
+  .input-field {
+    @apply w-full px-3.5 py-2.5 text-sm transition-colors focus:outline-none;
+    border-radius: var(--theme-radius-input, 0.5rem);
+    border: 1px solid var(--theme-border, #d1d5db);
+    background-color: var(--theme-surface, #ffffff);
+    color: var(--theme-text, #111827);
+  }
+  .input-field::placeholder {
+    color: var(--theme-text-muted, #9ca3af);
+  }
+  .input-field:focus {
+    border-color: var(--theme-primary, #3380fc);
+    --tw-ring-color: var(--theme-primary, #3380fc);
+  }
+  .card {
+    border-radius: var(--theme-radius-card, 0.75rem);
+    border: 1px solid var(--theme-border, #e5e7eb);
+    background-color: var(--theme-surface, #ffffff);
+    box-shadow: var(--theme-shadow, 0 1px 2px 0 rgba(0,0,0,0.05));
+  }
+  .label-text {
+    @apply mb-1.5 block text-sm font-medium;
+    color: var(--theme-text, #374151);
+  }
+}
+
+@media print {
+  body { background: #fff !important; }
+  .print-header { margin-bottom: 1.5rem; }
+  .print-header h1 { font-size: 1.25rem; font-weight: 700; margin: 0; }
+  .print-header p { font-size: 0.875rem; color: #6b7280; margin: 0.25rem 0 0; }
+  .card { box-shadow: none !important; border: 1px solid #d1d5db !important; break-inside: avoid; }
+}
