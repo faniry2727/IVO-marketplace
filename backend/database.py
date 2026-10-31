@@ -1,3 +1,4 @@
+import os
 import uuid
 from sqlalchemy import create_engine, Column, String, Boolean, Integer, Text, ForeignKey, DateTime
 from sqlalchemy.dialects.postgresql import UUID
@@ -5,7 +6,11 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.sql import func
 
-DATABASE_URL = "postgresql://postgres:postgres@localhost:5432/ivo_db"
+DATABASE_URL = os.environ.get("DATABASE_URL", "postgresql://postgres:postgres@localhost:5432/ivo_db")
+
+
+if DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
 
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
@@ -17,7 +22,7 @@ class Profile(Base):
     email = Column(String(255), unique=True, nullable=False, index=True)
     hashed_password = Column(String(255), nullable=False)
     full_name = Column(String(255))
-    role = Column(String(50), default="client") # client, seller, driver, admin
+    role = Column(String(50), default="client")
     phone = Column(String(50))
     city = Column(String(100))
     is_available = Column(Boolean, default=False)
@@ -74,7 +79,7 @@ class Delivery(Base):
     delivery_address = Column(Text)
     delivery_phone = Column(String(50))
 
-# Création des tables dans PostgreSQL
+# Crée automatiquement les tables dans la base PostgreSQL distante
 Base.metadata.create_all(bind=engine)
 
 def get_db():
