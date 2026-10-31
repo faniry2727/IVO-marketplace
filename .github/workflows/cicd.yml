@@ -1,32 +1,39 @@
-name: ci/cd pipeline
+name: CI/CD Pipeline
+
 on:
-push:
-branches: [ "main" ]
+  push:
+    branches: [ "main" ]
 
-           jobs:
-           test-and-deploy:
-           runs-on: ubuntu-latest
-           steps:
-           uses: actions/checkout@v4
+jobs:
+  test-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-              # test frontend
-name: setup node and build frontend
-uses: actions/setup-node@v4
-with:
-    node-version: 20
-    run: npm ci && npm run build
+      # 1. Test frontend
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Build Frontend
+        run: |
+          npm ci
+          npm run build
 
-                      # test backend
-name: setup python and test backend
-uses: actions/setup-python@v4
-with:
-    python-version: '3.10'
-    run: 
-        cd backend
-        pip install -r requirements.txt
-        python3 -c "import main, database, security; print('Backend Python testé!')"
+      # 2. Test backend 
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      - name: Test Backend
+        run: |
+          cd backend
+          pip install -r requirements.txt
+          python3 -c "import main, database, security; print('Backend Python testé!')"
 
-              # déploiement automatique
-name: deploy to render
-if: success()
-run: curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK }}"
+      # 3. Déploiement automatique
+      - name: Deploy to Render
+        if: success()
+        run: |
+          curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK }}"
