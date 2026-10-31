@@ -25,3 +25,5 @@ terraform.tfvars
 terraform/.terraform/
 terraform/*.tfstate*
 terraform/terraform.tfvars
+__pycache__/
+*.pyc
