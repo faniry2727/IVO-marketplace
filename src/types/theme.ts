@@ -77,7 +77,10 @@ export interface SiteTheme {
 }
 
 export const DEFAULT_THEME: ThemeConfig = {
-  branding: { main: "https://ihmncbkgixafdjkdfsen.supabase.co/storage/v1/object/public/theme-assets/logos/main-1791046654820.png", footer: "https://ihmncbkgixafdjkdfsen.supabase.co/storage/v1/object/public/theme-assets/logos/main-1791046654820.png" },
+  branding: {
+    main: "https://ihmncbkgixafdjkdfsen.supabase.co/storage/v1/object/public/theme-assets/images/logo.png",
+    footer: "https://ihmncbkgixafdjkdfsen.supabase.co/storage/v1/object/public/theme-assets/images/logo.png",
+  },,
   colors: {
     primary: '#15803d',
     secondary: '#166534',
@@ -173,7 +176,10 @@ export function getLogoUrl(theme: ThemeConfig | null, placement: LogoPlacement):
 
 export function mergeTheme(published: ThemeConfig, draft: ThemeConfig): ThemeConfig {
   return {
-    branding: { ...published.branding, ...draft.branding },
+    branding: {
+    main: "https://ihmncbkgixafdjkdfsen.supabase.co/storage/v1/object/public/theme-assets/images/logo.png",
+    footer: "https://ihmncbkgixafdjkdfsen.supabase.co/storage/v1/object/public/theme-assets/images/logo.png",
+  },,
     colors: { ...published.colors, ...draft.colors },
     typography: { ...published.typography, ...draft.typography },
     style: { ...published.style, ...draft.style },
