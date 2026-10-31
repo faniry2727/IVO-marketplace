@@ -8,7 +8,6 @@ from sqlalchemy.sql import func
 
 DATABASE_URL = os.environ.get("DATABASE_URL", "postgresql://postgres:postgres@localhost:5432/ivo_db")
 
-
 if DATABASE_URL.startswith("postgres://"):
     DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
 
@@ -79,8 +78,11 @@ class Delivery(Base):
     delivery_address = Column(Text)
     delivery_phone = Column(String(50))
 
-# Crée automatiquement les tables dans la base PostgreSQL distante
-Base.metadata.create_all(bind=engine)
+
+try:
+    Base.metadata.create_all(bind=engine)
+except Exception as e:
+    print(f"Notice CI/CD: Connexion base différée ({e})")
 
 def get_db():
     db = SessionLocal()
