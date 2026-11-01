@@ -80,7 +80,7 @@ export const DEFAULT_THEME: ThemeConfig = {
   branding: {
     main: "https://ihmncbkgixafdjkdfsen.supabase.co/storage/v1/object/public/theme-assets/images/logo.png",
     footer: "https://ihmncbkgixafdjkdfsen.supabase.co/storage/v1/object/public/theme-assets/images/logo.png",
-  },,
+  },
   colors: {
     primary: '#15803d',
     secondary: '#166534',
@@ -179,7 +179,7 @@ export function mergeTheme(published: ThemeConfig, draft: ThemeConfig): ThemeCon
     branding: {
     main: "https://ihmncbkgixafdjkdfsen.supabase.co/storage/v1/object/public/theme-assets/images/logo.png",
     footer: "https://ihmncbkgixafdjkdfsen.supabase.co/storage/v1/object/public/theme-assets/images/logo.png",
-  },,
+  },
     colors: { ...published.colors, ...draft.colors },
     typography: { ...published.typography, ...draft.typography },
     style: { ...published.style, ...draft.style },
