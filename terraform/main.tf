@@ -55,7 +55,7 @@ resource "render_web_service" "ivo_api" {
 
 # 3. Frontend React (Static Site)
 resource "render_static_site" "ivo_frontend" {
-  name          = "ivo-frontend"
+  name          = "ivo"
   repo_url      = "https://github.com/faniry2727/IVO-marketplace"
   branch        = "main"
   build_command = "npm run build"
