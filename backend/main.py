@@ -1,3 +1,4 @@
+from prometheus_fastapi_instrumentator import Instrumentator
 import uuid
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -15,6 +16,24 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# AJOUT GRAFANA PROMETHEUS
+from prometheus_fastapi_instrumentator import Instrumentator
+
+
+app = FastAPI(title="IVO API Backend")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# --- ACTIVATION DES MÉTRIQUES ---
+
+        Instrumentator().instrument(app).expose(app)
 
 # --- AUTHENTIFICATION ---
 class RegisterData(BaseModel):
