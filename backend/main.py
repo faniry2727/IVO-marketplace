@@ -48,7 +48,7 @@ def verify_metrics_auth(credentials: HTTPBasicCredentials = Depends(security)):
     return credentials.username
 
 # Création de la route /metrics protégée par mot de passe
-@app.get("/metrics", include_in_schema=False)
+@app.api_route("/metrics", methods=["GET", "HEAD"], include_in_schema=False)
 def metrics_endpoint(_user: str = Depends(verify_metrics_auth)):
     return Response(generate_latest(), media_type=CONTENT_TYPE_LATEST)
 
