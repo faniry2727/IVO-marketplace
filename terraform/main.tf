@@ -4,7 +4,6 @@ terraform {
       source  = "render-oss/render"
       version = ">= 1.0.0"
     }
-    # AJOUT : Provider Grafana
     grafana = {
       source  = "grafana/grafana"
       version = ">= 3.0.0"
@@ -12,43 +11,21 @@ terraform {
   }
 }
 
-
+# --- Providers ---
 provider "render" {
   api_key  = var.render_api_key
   owner_id = var.render_owner_id
 }
 
-
 provider "grafana" {
   url  = var.grafana_url
   auth = var.grafana_api_key
+
+  connections_api_access_token = var.grafana_connections_token
+  connections_api_url          = "https://connections-api-prod-eu-west-2.grafana.net"
 }
 
-
-variable "render_api_key" {
-  type      = string
-  sensitive = true
-}
-
-variable "render_owner_id" {
-  type = string
-}
-
-
-variable "grafana_url" {
-  type = string
-}
-
-variable "grafana_api_key" {
-  type      = string
-  sensitive = true
-}
-
-variable "grafana_stack_id" {
-  type = string
-}
-
-
+# --- 1. Base PostgreSQL Cloud (Render) ---
 resource "render_postgres" "ivo_db" {
   name          = "ivo-postgres"
   plan          = "free"
@@ -58,7 +35,7 @@ resource "render_postgres" "ivo_db" {
   database_user = "ivo_user"
 }
 
-
+# --- 2. Backend Python (Render) ---
 resource "render_web_service" "ivo_api" {
   name    = "ivo-backend"
   plan    = "free"
@@ -80,7 +57,7 @@ resource "render_web_service" "ivo_api" {
   }
 }
 
-
+# --- 3. Frontend React (Render) ---
 resource "render_static_site" "ivo_frontend" {
   name          = "ivo-shop"
   repo_url      = "https://github.com/faniry2727/IVO-marketplace"
@@ -103,17 +80,21 @@ resource "render_static_site" "ivo_frontend" {
   ]
 }
 
-
+# --- 4. Grafana Cloud : Collecte des métriques ---
 resource "grafana_connections_metrics_endpoint_scrape_job" "ivo_metrics" {
   stack_id                = var.grafana_stack_id
   name                    = "ivo-backend-scrape"
   enabled                 = true
   url                     = "${render_web_service.ivo_api.url}/metrics"
   scrape_interval_seconds = 60
-  authentication_method   = "none"
+
+  # On utilise les mêmes identifiants que dans main.py
+  authentication_method         = "basic"
+  authentication_basic_username = "ivo_metrics_user"
+  authentication_basic_password = "ivo_metrics_password_123"
 }
 
-
+# --- 5. Grafana Cloud : Tableau de bord ---
 resource "grafana_dashboard" "ivo_dashboard" {
   config_json = jsonencode({
     title = "IVO - Backend Monitoring"
@@ -134,7 +115,7 @@ resource "grafana_dashboard" "ivo_dashboard" {
   })
 }
 
-
+# --- Outputs ---
 output "frontend_url" {
   value = render_static_site.ivo_frontend.url
 }

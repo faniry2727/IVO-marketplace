@@ -1,26 +1,18 @@
-from prometheus_fastapi_instrumentator import Instrumentator
 import uuid
-from fastapi import FastAPI, Depends, HTTPException
+import secrets
+from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
+from fastapi.responses import Response
+from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
 from sqlalchemy.orm import Session
 from pydantic import BaseModel, EmailStr
 from database import get_db, Profile, Category, Shop, Product, Order, Delivery
 from security import hash_password, verify_password, create_token, get_current_user_payload
 
-app = FastAPI(title="IVO API Backend")
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-# AJOUT GRAFANA PROMETHEUS
+# --- AJOUT POUR GRAFANA ---
 from prometheus_fastapi_instrumentator import Instrumentator
 
-
 app = FastAPI(title="IVO API Backend")
 
 app.add_middleware(
@@ -31,11 +23,37 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# --- ACTIVATION DES MÉTRIQUES ---
+# --- 1. INSTRUMENTATION DE BASE ---
+# Active la collecte des métriques en arrière-plan (sans créer la route publique)
+Instrumentator().instrument(app)
 
-        Instrumentator().instrument(app).expose(app)
+# --- 2. SÉCURISATION DE L'ENDPOINT /metrics ---
+security = HTTPBasic()
 
-# --- AUTHENTIFICATION ---
+def verify_metrics_auth(credentials: HTTPBasicCredentials = Depends(security)):
+    # Identifiants qui seront aussi configurés dans Terraform
+    correct_username = "ivo_metrics_user"
+    correct_password = "ivo_metrics_password_123"
+    
+    # Comparaison sécurisée pour éviter les attaques temporelles
+    is_correct_username = secrets.compare_digest(credentials.username, correct_username)
+    is_correct_password = secrets.compare_digest(credentials.password, correct_password)
+    
+    if not (is_correct_username and is_correct_password):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Basic"},
+        )
+    return credentials.username
+
+# Création de la route /metrics protégée par mot de passe
+@app.get("/metrics", include_in_schema=False)
+def metrics_endpoint(_user: str = Depends(verify_metrics_auth)):
+    return Response(generate_latest(), media_type=CONTENT_TYPE_LATEST)
+
+
+# --- AUTHENTIFICATION (Votre code existant) ---
 class RegisterData(BaseModel):
     email: EmailStr
     password: str
@@ -82,7 +100,7 @@ def get_me(payload: dict = Depends(get_current_user_payload), db: Session = Depe
         raise HTTPException(status_code=404, detail="Utilisateur introuvable")
     return user
 
-# --- CATALOGUE PUBLIC (Pour la page d'accueil IVO) ---
+# --- CATALOGUE PUBLIC ---
 @app.get("/api/public/categories")
 def get_categories(db: Session = Depends(get_db)):
     return db.query(Category).all()
@@ -131,7 +149,7 @@ def create_order(data: CreateOrderData, payload: dict = Depends(get_current_user
 def get_available_deliveries(payload: dict = Depends(get_current_user_payload), db: Session = Depends(get_db)):
     return db.query(Delivery).filter(Delivery.status == "WAITING_FOR_DRIVER").all()
 
-# --- ADMINISTRATION (Pour vous et votre ami) ---
+# --- ADMINISTRATION ---
 @app.get("/api/admin/users")
 def get_all_users(payload: dict = Depends(get_current_user_payload), db: Session = Depends(get_db)):
     if payload.get("role") != "admin":

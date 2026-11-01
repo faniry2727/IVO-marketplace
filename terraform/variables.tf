@@ -8,17 +8,19 @@ variable "render_owner_id" {
 }
 
 variable "grafana_url" {
-  description = "URL de votre stack Grafana Cloud (ex: https://faniry.grafana.net)"
-  type        = string
+  type = string
 }
 
 variable "grafana_api_key" {
-  description = "Clé API Grafana Cloud"
-  type        = string
-  sensitive   = true
+  type      = string
+  sensitive = true
 }
 
 variable "grafana_stack_id" {
-  description = "ID numérique de votre stack Grafana Cloud"
-  type        = string
+  type = string
+}
+
+variable "grafana_connections_token" {
+  type      = string
+  sensitive = true
 }
