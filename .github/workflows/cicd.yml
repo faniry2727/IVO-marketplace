@@ -12,28 +12,30 @@ jobs:
         uses: actions/checkout@v4
 
       # 1. Test frontend
-      - name: Setup Node
+      - name: Setup Node & Build Frontend
         uses: actions/setup-node@v4
         with:
           node-version: 20
-      - name: Build Frontend
-        run: |
+      - run: |
           npm ci
           npm run build
 
-      # 2. Test backend 
-      - name: Setup Python
+      # 2. Test backend
+      - name: Setup Python & Test Backend
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
-      - name: Test Backend
-        run: |
+      - run: |
           cd backend
           pip install -r requirements.txt
           python3 -c "import main, database, security; print('Backend Python testé!')"
 
-      # 3. Déploiement automatique
-      - name: Deploy to Render
+      # 3. Déploiement backend
+      - name: Deploy Backend to Render
         if: success()
-        run: |
-          curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK }}"
+        run: curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK }}"
+
+      # 4. Déploiement frontend
+      - name: Deploy Frontend to Render
+        if: success()
+        run: curl -X POST "${{ secrets.RENDER_FRONTEND_HOOK }}"
