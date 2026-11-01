@@ -78,8 +78,8 @@ export interface SiteTheme {
 
 export const DEFAULT_THEME: ThemeConfig = {
   branding: {
-    main: "https://ihmncbkgixafdjkdfsen.supabase.co/storage/v1/object/public/theme-assets/images/logo.png",
-    footer: "https://ihmncbkgixafdjkdfsen.supabase.co/storage/v1/object/public/theme-assets/images/logo.png",
+    main: "/logo.svg",
+    footer: "/logo.svg",
   },
   colors: {
     primary: '#15803d',
@@ -177,8 +177,8 @@ export function getLogoUrl(theme: ThemeConfig | null, placement: LogoPlacement):
 export function mergeTheme(published: ThemeConfig, draft: ThemeConfig): ThemeConfig {
   return {
     branding: {
-    main: "https://ihmncbkgixafdjkdfsen.supabase.co/storage/v1/object/public/theme-assets/images/logo.png",
-    footer: "https://ihmncbkgixafdjkdfsen.supabase.co/storage/v1/object/public/theme-assets/images/logo.png",
+    main: "/logo.svg",
+    footer: "/logo.svg",
   },
     colors: { ...published.colors, ...draft.colors },
     typography: { ...published.typography, ...draft.typography },
